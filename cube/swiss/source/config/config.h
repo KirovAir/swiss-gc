@@ -22,11 +22,11 @@ typedef struct {
 void config_parse(char *configData);
 void config_parse_swiss_settings(char *configData);
 void config_find(ConfigEntry *entry);
-int config_update(ConfigEntry *entry);
-int config_create();
-int config_init();
+int config_update(ConfigEntry *entry, int forceSlot);
+int config_create(int forceSlot);
+int config_init(int forceSlot);
 int config_get_count();
-int config_update_file();
+int config_update_file(int forceSlot);
 void config_copy_swiss_settings(SwissSettings *settings);
 SwissSettings *config_get_swiss_settings();
 

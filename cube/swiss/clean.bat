@@ -7,4 +7,4 @@ del *.gcm
 del build\*.h
 del build\*.tpl
 rmdir build
-rmdir dist
+rmdir dist /s /q

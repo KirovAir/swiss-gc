@@ -51,6 +51,7 @@ char txtbuffer[2048];           //temporary text buffer
 file_handle curFile;    //filedescriptor for current file
 file_handle curDir;     //filedescriptor for current directory
 int SDHCCard = 0; //0 == SDHC, 1 == normal SD
+int forceSlot = 1; // SlotB hack 
 int curDevice = 0;  //SD_CARD or DVD_DISC or IDEEXI or WODE
 int curCopyDevice = 0;  //SD_CARD or DVD_DISC or IDEEXI or WODE
 char *videoStr = NULL;
@@ -1305,13 +1306,13 @@ int check_game()
 	return multiDol;
 }
 
-void save_config(ConfigEntry *config) {
+void save_config(ConfigEntry *config, int forceSlot) {
 	// Save settings to current device
-	if(curDevice == SD_CARD || curDevice == IDEEXI) {
+	if(curDevice == SD_CARD || curDevice == IDEEXI || forceSlot) {
 		DrawFrameStart();
 		DrawMessageBox(D_INFO,"Saving Config ...");
 		DrawFrameFinish();
-		if(config_update(config)) {
+		if(config_update(config, forceSlot)) {
 			DrawFrameStart();
 			DrawMessageBox(D_INFO,"Config Saved Successfully!");
 			DrawFrameFinish();
@@ -1414,7 +1415,7 @@ int info_game()
 		}
 		if(PAD_ButtonsHeld(0) & PAD_BUTTON_X) {
 			if(show_settings((GCMDisk.DVDMagicWord == DVD_MAGIC) ? &curFile : NULL, config)) {
-				save_config(config);
+				save_config(config, forceSlot);
 			}
 		}
 		// Look for a cheats file based on the GameID

@@ -289,12 +289,12 @@ int show_settings(file_handle *file, ConfigEntry *config) {
 				}
 				else {
 					// Save the Swiss system settings since we're called from the main menu
-					if((curDevice == SD_CARD)||(curDevice == IDEEXI)) {
+					if((curDevice == SD_CARD)||(curDevice == IDEEXI) || forceSlot) {
 						DrawFrameStart();
 						DrawMessageBox(D_INFO,"Saving Config ...");
 						DrawFrameFinish();
 						config_copy_swiss_settings(&swissSettings);
-						if(config_update_file()) {
+						if(config_update_file(forceSlot)) {
 							DrawFrameStart();
 							DrawMessageBox(D_INFO,"Config Saved Successfully!");
 							DrawFrameFinish();

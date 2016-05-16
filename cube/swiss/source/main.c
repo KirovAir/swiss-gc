@@ -53,6 +53,16 @@ int needsDeviceChange = 0;
 int needsRefresh = 0;
 SwissSettings swissSettings;
 
+void trySlotB() {
+	if (deviceHandler_FAT_init(&initial_SD1)) 	{
+		forceSlot = 1;
+		print_gecko("Detected SDGecko in Slot B for config\r\n");
+	}
+	else {
+		forceSlot = 0;
+	}
+}
+
 int endsWith(char *str, char *end) {
 	if(strlen(str) < strlen(end))
 		return 0;
@@ -232,12 +242,12 @@ void load_auto_dol() {
 	}
 }
 
-void load_config() {
+void load_config(int forceSlot) {
 
 	// Try to open up the config .ini in case it hasn't been opened already (SD, IDE-EXI only)
-	if(!config_init()) {
-		if(curDevice == SD_CARD || curDevice == IDEEXI) {
-			if(!config_create()) {
+	if(!config_init(forceSlot)) {
+		if(curDevice == SD_CARD || curDevice == IDEEXI || forceSlot) {
+			if(!config_create(forceSlot)) {
 				DrawFrameStart();
 				DrawMessageBox(D_INFO,"Failed to create configuration file!");
 				DrawFrameFinish();
@@ -307,8 +317,7 @@ void free_files() {
 }
 
 void main_loop()
-{ 
-	
+{ 	
 	while(PAD_ButtonsHeld(0) & PAD_BUTTON_A) { VIDEO_WaitVSync (); }
 	// We don't care if a subsequent device is "default"
 	if(needsDeviceChange) {
@@ -316,12 +325,18 @@ void main_loop()
 		if(deviceHandler_deinit) {
 			deviceHandler_deinit(deviceHandler_initial);
 		}
+		if (forceSlot) {
+			deviceHandler_FAT_deinit(&initial_SD1);
+		}
 		curDevice = -1;
 		needsDeviceChange = 0;
 		deviceHandler_initial = NULL;
 		needsRefresh = 1;
 		curMenuLocation = ON_FILLIST;
 		select_device(0);
+		if (curDevice == WKF)  {
+			trySlotB();
+		}
 		curMenuLocation = ON_OPTIONS;
 	}
 	
@@ -357,7 +372,7 @@ void main_loop()
 			}
 		}
 		if(curDevice==SD_CARD || curDevice==WKF || curDevice==IDEEXI) { 
-			load_config();
+			load_config(forceSlot);
 		}
 	}
 	else {
@@ -450,7 +465,7 @@ int main ()
 
 	// Sane defaults
 	refreshSRAM();
-	swissSettings.debugUSB = 0;
+	swissSettings.debugUSB = 1;
 	swissSettings.gameVMode = 0;	// Auto video mode
 	swissSettings.exiSpeed = 1;		// 32MHz
 	swissSettings.uiVMode = 0; 		// Auto UI mode
@@ -479,7 +494,12 @@ int main ()
 	// Are we working with a Wiikey Fusion?
 	if(__wkfSpiReadId() != 0 && __wkfSpiReadId() != 0xFFFFFFFF) {
 		print_gecko("Detected Wiikey Fusion with SPI Flash ID: %08X\r\n",__wkfSpiReadId());
+
+		// Set real device back
 		curDevice = WKF;
+
+		// SlotB hack
+		trySlotB();
 	}
 	else {
 		deviceHandler_setStatEnabled(0);
@@ -536,7 +556,7 @@ int main ()
 	if(curDevice) {
 		needsDeviceChange = 0;
 		select_device(1); // to setup deviceHandler_ ptrs
-		load_config();
+		load_config(forceSlot);
 	}
 
 	// Start up the BBA if it exists

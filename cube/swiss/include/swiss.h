@@ -34,6 +34,7 @@ extern char IPLInfo[256] __attribute__((aligned(32)));
 extern int iplModchip;
 extern u8 driveVersion[8];
 extern DiskHeader GCMDisk;
+extern int forceSlot;
 
 extern void udelay(int s);
 extern void __SYS_ReadROM(void *buf,u32 len,u32 offset);
