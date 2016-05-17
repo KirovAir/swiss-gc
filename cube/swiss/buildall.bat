@@ -1,6 +1,6 @@
 start /wait clean.bat
 make
-elf2dol swiss.elf swiss.dol
+..\..\pc\utils\elf2dol swiss.elf swiss.dol
 ..\..\pc\utils\dollz3 swiss.dol swiss-lz.dol -m
 ..\..\pc\utils\dollz3 swiss.dol swiss-lz-viper.dol -m -v
 mkdir dist
