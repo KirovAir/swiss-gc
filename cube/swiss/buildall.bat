@@ -1,13 +1,4 @@
-del *.o /s
-del *.d /s
-del *.map /s
-del *.elf
-del *.dol /s
-del *.gcm
-del build\*.h
-del build\*.tpl
-rmdir build
-rmdir dist /s /q
+start /wait clean.bat
 make
 elf2dol swiss.elf swiss.dol
 ..\..\pc\utils\dollz3 swiss.dol swiss-lz.dol -m

@@ -8,3 +8,5 @@ del build\*.h
 del build\*.tpl
 rmdir build
 rmdir dist /s /q
+rmdir temp /s /q
+exit
